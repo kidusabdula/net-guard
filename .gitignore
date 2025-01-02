@@ -3,6 +3,5 @@ __pycache__/
 *.pyo
 *.pyd
 ai_env/
-data/
 .env
 .DS_Store
