@@ -5,14 +5,19 @@ st.set_page_config(
     page_title="Net Guard Dashboard",
     page_icon="🔒",
     layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
 # Enhanced CSS styling
 st.markdown("""
     <style>
-        /* Hide sidebar */
+        /* Hide all sidebar elements */
+        section[data-testid="stSidebar"] {display: none;}
+        
+        /* Hide other sidebar related elements */
         .css-1d391kg {display: none;}
         .css-18e3th9 {display: none;}
+        div[data-testid="stSidebarNav"] {display: none;}
         
         /* Dark mode styling */
         body {
@@ -76,12 +81,45 @@ st.markdown("""
         .css-1d391kg hr {
             border-color: #333333;
         }
+        /* Enhanced CSS styling for centering the button */
+        .center-button {
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            margin-top: 20px; /* Add some space above */
+        }
     </style>
 """, unsafe_allow_html=True)
 
-# Enhanced header section
-st.markdown('<h1 class="main-header">Net Guard Dashboard</h1>', unsafe_allow_html=True)
-st.markdown('<h3 class="subheader">A Comprehensive Solution for Anomaly Detection in Network Logs</h3>', unsafe_allow_html=True)
+# Hero Section
+st.markdown("""
+<div style="text-align: center; margin-top: 50px;">
+    <h1 style="font-size: 3em; color: #bb86fc;">Real-Time Anomaly Detection for Network Security</h1>
+    <p style="font-size: 1.5em; color: #e0e0e0;">Your comprehensive solution for monitoring and securing network traffic.</p>
+    <div style="position: relative; height: 300px; background: url('path/to/your/network-animation.gif') no-repeat center center; background-size: cover;">
+        <!-- Placeholder for background animation -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5);"></div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Enhanced CSS styling for centering the button
+st.markdown("""
+<style>
+.center-button {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    margin-top: 20px; /* Add some space above */
+}
+</style>
+""", unsafe_allow_html=True)
+
+# Wrap the button inside a div with the centering class
+st.markdown('<div class="center-button">', unsafe_allow_html=True)
+if st.button("Get Started", key="get_started_button"):
+    st.switch_page("pages/load_and_store_dataset.py")
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Welcome message in a container
 with st.container():
@@ -146,16 +184,6 @@ for title, description in steps:
     </div>
     """, unsafe_allow_html=True)
 
-# User Feedback Section
-st.markdown("### 📝 User Feedback")
-st.markdown("""
-We value your feedback! Please let us know your thoughts about the Net Guard Dashboard:
-""")
-feedback = st.text_area("Your Feedback:", height=150)
-if st.button("Submit Feedback"):
-    st.success("Thank you for your feedback!")
-
-# Rest of your existing logic for page navigation
 page = st.query_params.get("page", ["Home"])[0]
 
 if page == "Load_Dataset":
@@ -181,6 +209,7 @@ else:
     """, unsafe_allow_html=True)
     if st.button("Try the Anomaly Detector", key="start_button"):
         st.switch_page("pages/load_and_store_dataset.py")
+
 
 # Enhanced footer
 st.markdown("""
