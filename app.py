@@ -1,233 +1,284 @@
 import streamlit as st
+import requests
 
-# Configure the app's page to have no sidebar
+
+# Specify the path to your GIF file
+# Update this with the correct path
+
+# Display the GIF
+# st.image(gif_path, use_column_width=True)
+# Configure the app's page
 st.set_page_config(
     page_title="Net Guard Dashboard",
     page_icon="🔒",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="collapsed",
 )
 
-# Enhanced CSS styling
-st.markdown("""
+# Enhanced CSS styling with animations and better aesthetics
+st.markdown(
+    """
     <style>
-        /* Hide all sidebar elements */
-        section[data-testid="stSidebar"] {display: none;}
+        /* Base styles and resets */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
-        /* Hide other sidebar related elements */
-        .css-1d391kg {display: none;}
-        .css-18e3th9 {display: none;}
-        div[data-testid="stSidebarNav"] {display: none;}
+        /* Hide Streamlit elements */
+        section[data-testid="stSidebar"],
+        .css-1d391kg,
+        .css-18e3th9,
+        div[data-testid="stSidebarNav"],
+        footer {
+            display: none !important;
+        }
         
-        /* Dark mode styling */
+        /* Modern dark theme */
         body {
-            background-color: #121212; /* Dark background */
-            color: #ffffff; /* Light text */
-        }
-        .main-header {
-            color: #bb86fc; /* Light purple */
-            text-align: center;
-            padding: 2rem 0;
-        }
-        .subheader {
-            color: #e0e0e0; /* Light gray */
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .feature-card {
-            background-color: #1e1e1e; /* Dark card background */
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            margin-bottom: 1rem;
-        }
-        .step-card {
-            background-color: #1e1e1e; /* Dark step card background */
-            padding: 1.5rem;
-            border-left: 4px solid #bb86fc; /* Light purple border */
-            margin-bottom: 1.5rem;
-            border-radius: 0 10px 10px 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .footer {
-            text-align: center;
-            padding: 2rem 0;
-            color: #aaaaaa; /* Light gray for footer */
-            border-top: 1px solid #333; /* Darker border */
-        }
-        /* Sidebar styling */
-        .css-1d391kg {
-            background-color: #1e1e1e;  /* Dark sidebar background */
-        }
-        .css-1d391kg .stButton button {
-            width: 100%;
-            background-color: #bb86fc;  /* Purple buttons */
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
             color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            padding: 10px;
-            margin: 5px 0;
+            font-family: 'Inter', sans-serif;
         }
-        .css-1d391kg h1 {
-            color: #bb86fc;  /* Purple headers */
-            font-size: 1.5em;
-            padding: 1rem 0;
+        
+        /* Hero section styling */
+        .hero-container {
+            text-align: center;
+            padding: 5rem 2rem;
+            background: linear-gradient(145deg, rgba(30,30,46,0.9) 0%, rgba(45,45,65,0.9) 100%);
+            border-radius: 30px;
+            margin: 2rem auto;
+            max-width: 1400px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: fadeIn 1s ease-out;
         }
-        /* Sidebar links */
-        .css-1d391kg a {
+        
+        /* Animated headline */
+        .hero-headline {
+            font-size: 4em;
+            background: linear-gradient(120deg, #bb86fc, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+            animation: slideDown 0.8s ease-out;
+            text-align: center;
+        }
+        
+        /* Subtext with better readability */
+        .hero-subtext {
+            font-size: 1.6em;
+            text-align: center !important; /* Ensure centering */
             color: #e0e0e0;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+            animation: fadeIn 1s ease-out 0.3s both;
         }
-        /* Sidebar divider */
-        .css-1d391kg hr {
-            border-color: #333333;
+        
+        /* Network visualization */
+        .network-animation {
+            position: relative;
+            height: 450px;
+            background: radial-gradient(circle at center, rgba(187,134,252,0.1) 0%, rgba(0,0,0,0) 70%);
+            margin: 3rem 0;
+            border-radius: 20px;
+            overflow: hidden;
+            animation: pulse 2s infinite;
         }
-        /* Enhanced CSS styling for centering the button */
-        .center-button {
-            display: flex;
-            justify-content: center; /* Center horizontally */
-            align-items: center; /* Center vertically */
-            margin-top: 20px; /* Add some space above */
+        
+        /* Feature cards */
+        .feature-card {
+            background: rgba(30,30,46,0.7);
+            padding: 2rem;
+            border-radius: 20px;
+            margin: 1rem 0;
+            border: 1px solid rgba(187,134,252,0.1);
+            transition: all 0.3s ease;
+            animation: slideUp 0.8s ease-out;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(187,134,252,0.2);
+            border-color: rgba(187,134,252,0.3);
+        }
+        
+        /* Feature icons and text */
+        .feature-icon {
+            font-size: 2em;
+            margin-bottom: 1rem;
+            color: #bb86fc;
+        }
+        
+        .feature-title {
+            color: #bb86fc;
+            font-size: 1.3em;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        /* Button styling */
+        .stButton button {
+            background: linear-gradient(45deg, #bb86fc 0%, #7b2cbf 100%) !important;
+            color: white !important;
+            padding: 1em 3em !important;
+            border-radius: 50px !important;
+            font-size: 1.2em !important;
+            font-weight: 600 !important;
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(187,134,252,0.3) !important;
+            transition: all 0.3s ease !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            margin: 2rem auto !important;
+            display: block !important;
+        }
+        
+        .stButton button:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(187,134,252,0.5) !important;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(187,134,252,0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(187,134,252,0); }
+            100% { box-shadow: 0 0 0 0 rgba(187,134,252,0); }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .hero-headline { font-size: 2.5em; }
+            .hero-subtext { font-size: 1.2em; }
+            .network-animation { height: 300px; }
+        }
+        
+        .hero-subtext {
+            text-align: center !important; /* Force centering */
+        }
+        
+         /* Animations */
+         @keyframes slideIn {
+        from { transform: translateX(-30px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+        }
+
+         @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
         }
     </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # Hero Section
-st.markdown("""
-<div style="text-align: center; margin-top: 50px;">
-    <h1 style="font-size: 3em; color: #bb86fc;">Real-Time Anomaly Detection for Network Security</h1>
-    <p style="font-size: 1.5em; color: #e0e0e0;">Your comprehensive solution for monitoring and securing network traffic.</p>
-    <div style="position: relative; height: 300px; background: url('path/to/your/network-animation.gif') no-repeat center center; background-size: cover;">
-        <!-- Placeholder for background animation -->
-        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5);"></div>
-    </div>
+st.markdown(
+    """
+<div class="hero-container">
+    <h1 class="hero-headline">Detect Anomalies Before They Become Threats</h1>
+    <h5 class="hero-subtext">Net Guard leverages advanced AI to ensure network security by detecting unauthorized access, malware, and unusual traffic patterns.</p>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
-# Enhanced CSS styling for centering the button
-st.markdown("""
-<style>
-.center-button {
-    display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    margin-top: 20px; /* Add some space above */
-}
-</style>
-""", unsafe_allow_html=True)
+# CTA Button
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    if st.button("View Demo", key="demo_button", type="primary"):
+        st.switch_page("pages/data_loading_page.py")
 
-# Wrap the button inside a div with the centering class
-st.markdown('<div class="center-button">', unsafe_allow_html=True)
-if st.button("Get Started", key="get_started_button"):
-    st.switch_page("pages/load_and_store_dataset.py")
-st.markdown('</div>', unsafe_allow_html=True)
+# Features section
+st.markdown(
+    """
+<div style='padding: 2rem 0;'>
+    <h2 style='text-align: center; color: #bb86fc; margin-bottom: 2rem; font-size: 2.5em;'>Why Choose Net Guard?</h2>
+</div>
+""",
+    unsafe_allow_html=True,
+)
 
-# Welcome message in a container
-with st.container():
-    st.markdown("""
-    <div class="feature-card">
-        Welcome to the <b>Net Guard Dashboard</b>! This platform guides you through the entire process of network anomaly detection, 
-        from raw dataset loading to advanced clustering and anomaly detection using autoencoders. Explore each step in detail by 
-        navigating through the options below.
-    </div>
-    """, unsafe_allow_html=True)
-
-# Features section with columns
-st.markdown("### 🎯 Features of the Dashboard")
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("""
+    st.markdown(
+        """
     <div class="feature-card">
-        • 📊 <b>Load Raw Datasets</b>: Import and inspect your network log data<br>
-        • 🔍 <b>Handle Missing Values</b>: Check and impute missing entries<br>
-        • 🔄 <b>Encode Categorical Data</b>: Transform categorical features<br>
-        • 📈 <b>Visualize Data</b>: Generate visualizations to understand data distributions<br>
-        • 📊 <b>Data Normalization</b>: Normalize data for better model performance<br>
+        <div class="feature-icon">🔍</div>
+        <div class="feature-title">Real-time Detection</div>
+        <p>Advanced monitoring system that continuously analyzes network traffic patterns and behaviors.</p>
     </div>
-    """, unsafe_allow_html=True)
+    
+    <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-title">AI-Powered Analysis</div>
+        <p>State-of-the-art machine learning algorithms that adapt and learn from your network's unique patterns.</p>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col2:
-    st.markdown("""
+    st.markdown(
+        """
     <div class="feature-card">
-        • 🤖 <b>Apply KNN Imputation</b>: Ensure data integrity<br>
-        • 📈 <b>Cluster Analysis</b>: Understand network patterns<br>
-        • 🚨 <b>Anomaly Detection</b>: Detect irregularities<br>
-        • 📊 <b>Generate Reports</b>: Create detailed reports of findings and insights<br>
-        • 📚 <b>Documentation</b>: Access detailed documentation for each feature<br>
+        <div class="feature-icon">🛡️</div>
+        <div class="feature-title">Proactive Defense</div>
+        <p>Stop potential threats before they can impact your systems with predictive analysis.</p>
     </div>
-    """, unsafe_allow_html=True)
-
-# Workflow section
-st.markdown("### 🔄 Detailed Workflow of Net Guard")
-
-# Add each step in a card-like container
-steps = [
-    ("Step 1: Load and Inspect Raw Data", "Loading raw dataset containing network log data..."),
-    ("Step 2: Handle Missing Values", "Using KNN Imputer to fill in missing entries..."),
-    ("Step 3: Encode Categorical Data", "Converting categorical features into numeric values..."),
-    ("Step 4: Data Normalization", "Normalizing data for better model performance..."),
-    ("Step 5: Apply KNN Imputation", "Applying K-Nearest Neighbors imputation..."),
-    ("Step 6: Decode Data", "Reversing encoding for readable format..."),
-    ("Step 7: Load and Scale Data", "Scaling features for consistent analysis..."),
-    ("Step 8: Perform K-Means Clustering", "Grouping data points based on similarity..."),
-    ("Step 9: Apply Anomaly Detection", "Using autoencoders to detect network anomalies..."),
-    ("Step 10: Visualize Results", "Creating visualizations to interpret clustering and anomalies..."),
-    ("Step 11: Generate Reports", "Compiling findings into a comprehensive report..."),
-    ("Step 12: Review and Feedback", "Gathering user feedback for continuous improvement...")
-]
-
-for title, description in steps:
-    st.markdown(f"""
-    <div class="step-card">
-        <h4>{title}</h4>
-        {description}
+    
+    <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Interactive Insights</div>
+        <p>Beautiful, intuitive dashboards that give you complete visibility into your network's security status.</p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
-page = st.query_params.get("page", ["Home"])[0]
-
-if page == "Load_Dataset":
-    st.header("📥 Load Raw Dataset")
-    st.write("Here you can import and inspect your network log data.")
-
-elif page == "Autoencoder":
-    st.header("🔍 Anomaly Detection")
-    st.write("Here you can apply autoencoder models to detect anomalies in the data.")
-
-elif page == "Load_and_Store_Dataset":
-    st.header("💾 Load and Store Dataset")
-    st.write("This is where you load and store your dataset for further processing.")
-
-else:
-    st.markdown("""
-    <div style="text-align: left; margin-top: 50px;">
-        <h1 style="font-size: 3em; color: #bb86fc;">🚀 Start Exploring</h1>
-        <p style="font-size: 1.5em; color: #e0e0e0;">Click the button below to try the Anomaly Detector!</p>
-        <div style="margin-top: 20px;">
-        </div>
+# How It Works Section
+st.markdown(
+    """
+    <div style="padding: 4rem 0; text-align: center;">
+        <h2 style="color: #bb86fc;">How It Works</h2>
+        <p>Experience the power of Net Guard in just a few simple steps:</p>
+        <ol>
+            <li>Load your network logs.</li>
+            <li>AI detects patterns and anomalies.</li>
+            <li>Review results in an interactive dashboard.</li>
+        </ol>
     </div>
-    """, unsafe_allow_html=True)
-    if st.button("Try the Anomaly Detector", key="start_button"):
-        st.switch_page("pages/load_and_store_dataset.py")
+    """,
+    unsafe_allow_html=True,
+)
 
-
-# Enhanced footer
-st.markdown("""
-<div class="footer">
-    <b>Net Guard Dashboard</b> | Developed by [Your Name] | Powered by Streamlit
+# Footer
+st.markdown(
+    """
+<div style="text-align: center; padding: 4rem 0; color: #bb86fc; font-size: 1.2em;">
+    <p>Net Guard | Securing Networks with AI</p>
 </div>
-""", unsafe_allow_html=True)
-
-# Create the sidebar
-with st.sidebar:
-    st.title("Navigation")
-    st.markdown("---")
-    if st.button("Home"):
-        st.experimental_set_query_params(page="Home")
-    if st.button("Load Dataset"):
-        st.experimental_set_query_params(page="Load_Dataset")
-    if st.button("Anomaly Detection"):
-        st.experimental_set_query_params(page="Autoencoder")
-    st.markdown("---")
-    st.markdown("### Settings")
-    # Add any settings controls here
+""",
+    unsafe_allow_html=True,
+)

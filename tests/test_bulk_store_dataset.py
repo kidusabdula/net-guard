@@ -2,7 +2,7 @@ import pandas as pd
 import psycopg2
 from src.database.db_operations import bulk_store_dataset
 from src.database.db_config import create_db_connection
-from preprocessing.raw_dataset_loader import raw_dataset_loader
+from preprocessing.load_raw_data import raw_dataset_loader
 
 # Load test DataFrame
 train_df, test_df, combined_df = raw_dataset_loader()
