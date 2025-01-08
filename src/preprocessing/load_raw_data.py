@@ -7,7 +7,6 @@ class DataLoaderFactory:
         self.file_path = file_path
 
     def load_raw_data(self, train_file_path=None, test_file_path=None):
-        """Load training and testing datasets."""
         if train_file_path is None or test_file_path is None:
             base_path = Path(__file__).parent.parent.parent / 'data'
             train_file_path = base_path / 'UNSW_NB15_training_set.csv'

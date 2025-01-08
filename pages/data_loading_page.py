@@ -6,21 +6,16 @@ from src.preprocessing.store_dataset import StoreDataSetFactory
 st.markdown(
     """
     <style>
-        /* Hide all sidebar elements */
         section[data-testid="stSidebar"] {display: none;}
         
-        /* Hide other sidebar related elements */
         .css-1d391kg {display: none;}
         .css-18e3th9 {display: none;}
         div[data-testid="stSidebarNav"] {display: none;}
         
-        /* Hide hamburger menu */
         button[kind="header"] {display: none;}
         
-        /* Hide footer */
         footer {display: none;}
         
-        /* Hide main menu */
         #MainMenu {display: none;}
     </style>
 """,
@@ -51,8 +46,6 @@ def show_dataset_info():
 
 def data_loading_page():
     st.title("🔍 Data Loading and Exploration")
-
-    # Center the hero subtext using custom CSS
     st.markdown(
         """
         <style>
@@ -66,16 +59,12 @@ def data_loading_page():
     """,
         unsafe_allow_html=True,
     )
-
-    # Show dataset information
     show_dataset_info()
 
-    # Initialize session state for datasets if not exists
     if "datasets_loaded" not in st.session_state:
         st.session_state.datasets_loaded = False
 
-    # Create a centered layout for the Load Dataset button
-    col1, col2, col3 = st.columns([1, 2, 1])  # Adjust the proportions as needed
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("Load UNSW-NB15 Dataset"):
             with st.spinner("Loading datasets..."):
@@ -97,9 +86,7 @@ def data_loading_page():
                         "Failed to load datasets. Please check the file paths and try again."
                     )
 
-    # Display dataset information only if data is loaded
     if st.session_state.datasets_loaded:
-        # Dataset selection
         dataset_option = st.radio(
             "Select Dataset to View:",
             ["Training Dataset", "Testing Dataset", "Combined Dataset"],
@@ -116,17 +103,14 @@ def data_loading_page():
         st.write(f"Shape: {selected_df.shape} (rows, columns)")
 
         try:
-            # Display summary statistics
             st.subheader("Dataset Summary")
             st.write(selected_df.describe())
 
-            # Preview data with pagination
             st.subheader("Data Preview")
             page_size = st.slider("Rows per page", min_value=5, max_value=50, value=10)
             page_number = st.number_input("Page number", min_value=1, value=1)
             start_idx = (page_number - 1) * page_size
             end_idx = start_idx + page_size
-            # Add a button to store the dataset
             if st.button("Store Dataset To Database"):
                 with st.spinner("Storing dataset to database..."):
                     try:
@@ -149,5 +133,4 @@ def data_loading_page():
                 st.switch_page("pages/missing_values_handling.py")
 
 
-# This line is crucial for Streamlit to run the page
 data_loading_page()

@@ -8,30 +8,25 @@ def display_data_summary(data, title):
     st.subheader(title)
     st.write(data.describe())
     st.write(f"Shape: {data.shape[0]} rows, {data.shape[1]} columns")
-    st.write("---")  # Separator for better visual distinction
+    st.write("---")
 
 
 def check_missing_values_page():
     st.title("🔍 Check Missing Values in Datasets")
 
-    # Hero Section
     st.markdown(
         """
         <style>
         section[data-testid="stSidebar"] {display: none;}
         
-        /* Hide other sidebar related elements */
         .css-1d391kg {display: none;}
         .css-18e3th9 {display: none;}
         div[data-testid="stSidebarNav"] {display: none;}
         
-        /* Hide hamburger menu */
         button[kind="header"] {display: none;}
         
-        /* Hide footer */
         footer {display: none;}
         
-        /* Hide main menu */
         #MainMenu {display: none;}
         .hero {
             background-color: #f4f7f6;
@@ -68,7 +63,6 @@ def check_missing_values_page():
     )
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # Explanation of KNN imputation
     st.markdown(
         """
         ## How It Works
@@ -84,22 +78,18 @@ def check_missing_values_page():
         """
     )
 
-    # Fetch train and test datasets with a spinner
     with st.spinner("Fetching train and test datasets from the database..."):
         train_data = fetch_table_data("unsw_nb15_raw_train_dataset")
         test_data = fetch_table_data("unsw_nb15_raw_test_dataset")
-        st.success("Datasets fetched successfully.")  # Indicate success
+        st.success("Datasets fetched successfully.")
 
-    # Convert fetched data to DataFrame
     train_df = pd.DataFrame(train_data)
     test_df = pd.DataFrame(test_data)
 
     if train_df is not None and test_df is not None:
-        # Display summaries
         display_data_summary(train_df, "Train Dataset Summary")
         display_data_summary(test_df, "Test Dataset Summary")
 
-        # Check for missing values
         check_missing_values_factory = CheckMissingValuesFactory()
         test_missing_summary, train_missing_summary = (
             check_missing_values_factory.check_missing_values_module(
@@ -107,28 +97,20 @@ def check_missing_values_page():
             )
         )
 
-        # Display missing values summary
         if not test_missing_summary.empty:
             st.write("### Missing Values in Test Data:")
             st.write(test_missing_summary)
-            st.bar_chart(
-                test_missing_summary
-            )  # Visual representation of missing values
+            st.bar_chart(test_missing_summary)
 
         if not train_missing_summary.empty:
             st.write("### Missing Values in Train Data:")
             st.write(train_missing_summary)
-            st.bar_chart(
-                train_missing_summary
-            )  # Visual representation of missing values
+            st.bar_chart(train_missing_summary)
     else:
         st.error("Failed to fetch datasets. Please check the database connection.")
 
-    # Add a dynamic and aesthetic button to redirect to Imputation_page.py
-    if st.button(
-                "Proceed to Imputation Process", key="proceed_button", type="primary"
-            ):
-                st.switch_page("pages/imputation_page.py")
+    if st.button("Proceed to Imputation Process", key="proceed_button", type="primary"):
+        st.switch_page("pages/imputation_page.py")
 
 
 if __name__ == "__main__":

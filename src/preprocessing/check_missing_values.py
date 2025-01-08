@@ -7,23 +7,22 @@ class CheckMissingValuesFactory:
     def check_missing_values_module(
         self, test_data: pd.DataFrame, train_data: pd.DataFrame, threshold: float = 0.0
     ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        
-        if not isinstance(test_data, pd.DataFrame) or not isinstance(train_data, pd.DataFrame):
+
+        if not isinstance(test_data, pd.DataFrame) or not isinstance(
+            train_data, pd.DataFrame
+        ):
             raise ValueError("Both test_data and train_data must be pandas DataFrames.")
 
-        # Test Data Summary
         test_data_missing_summary = test_data.isnull().mean() * 100
         test_data_missing_summary = test_data_missing_summary[
             test_data_missing_summary > threshold
         ].to_frame(name="Missing Percentage in test data")
 
-        # Train Data Summary
         train_data_missing_summary = train_data.isnull().mean() * 100
         train_data_missing_summary = train_data_missing_summary[
             train_data_missing_summary > threshold
         ].to_frame(name="Missing Percentage in train data")
 
-        # Logging Information
         if not test_data_missing_summary.empty:
             print("Missing values found in test dataset.")
         else:
